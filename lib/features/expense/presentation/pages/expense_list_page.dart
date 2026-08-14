@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/di/injection.dart';
 import '../../domain/entities/expense.dart';
 import '../bloc/expense_bloc.dart';
 import '../bloc/expense_event.dart';
 import '../bloc/expense_state.dart';
 import '../widgets/expense_summary_chart.dart';
-import '../widgets/add_expense_dialog.dart';
 
 class ExpenseListPage extends StatelessWidget {
   const ExpenseListPage({super.key});
@@ -100,9 +100,9 @@ class ExpenseListView extends StatelessWidget {
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                             child: ListTile(
                               onLongPress: () async {
-                                final updatedExpense = await showDialog<Expense>(
-                                  context: context,
-                                  builder: (context) => AddExpenseDialog(expense: expense),
+                                final updatedExpense = await context.push<Expense>(
+                                  '/edit',
+                                  extra: expense,
                                 );
                                 if (updatedExpense != null && context.mounted) {
                                   context.read<ExpenseBloc>().add(UpdateExpenseEvent(updatedExpense));
@@ -139,10 +139,7 @@ class ExpenseListView extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          final expense = await showDialog<Expense>(
-            context: context,
-            builder: (context) => const AddExpenseDialog(),
-          );
+          final expense = await context.push<Expense>('/add');
           if (expense != null && context.mounted) {
             context.read<ExpenseBloc>().add(AddExpenseEvent(expense));
           }
