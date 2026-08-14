@@ -1,0 +1,9 @@
+- [x] Cấu hình `pubspec.yaml` và cài đặt dependencies
+- [x] Thiết lập cấu trúc thư mục Clean Architecture
+- [x] Triển khai Core Layer (DI, Failure, UseCase)
+- [x] Triển khai Feature: Expense
+    - [x] Domain Layer (Entity, Repository, UseCases)
+    - [x] Data Layer (Model, DataSources, RepositoryImpl)
+    - [x] Presentation Layer (Bloc, UI, Widgets)
+- [x] Tích hợp `go_router` và thiết kế UI/Animations
+- [x] Kiểm tra và hoàn thiện
