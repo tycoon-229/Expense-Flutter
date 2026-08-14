@@ -1,53 +1,294 @@
-Walkthrough - Expense Tracker App
+# 💰 Expense Tracker App
 
-Ứng dụng quản lý chi tiêu đơn giản đã được xây dựng hoàn tất với kiến trúc sạch (Clean Architecture) và đầy đủ các tính năng yêu cầu.
+Ứng dụng quản lý chi tiêu đơn giản được xây dựng bằng **Flutter**, áp dụng kiến trúc **Clean Architecture** và các công nghệ hiện đại để quản lý trạng thái, lưu trữ dữ liệu, điều hướng và hiển thị biểu đồ.
 
-Các thành phần chính
+## ✨ Tổng quan
 
-🏗 Kiến trúc dự án
+**Expense Tracker App** hỗ trợ người dùng quản lý các khoản chi tiêu cá nhân một cách đơn giản và trực quan.
 
-Dự án được chia theo các lớp rõ ràng:
+Ứng dụng cung cấp các chức năng chính:
 
-Core: Chứa các thành phần dùng chung như DI (get_it), Error handling và UseCase base.
+* 📊 Xem tổng quan các khoản chi tiêu.
+* 🥧 Hiển thị biểu đồ phân bổ chi tiêu theo danh mục.
+* ➕ Thêm khoản chi tiêu mới.
+* 🗑️ Xóa khoản chi tiêu bằng thao tác vuốt.
+* 💾 Lưu trữ dữ liệu trực tiếp trên thiết bị.
+* 🎨 Giao diện Material 3 hiện đại.
+* ✨ Hiệu ứng chuyển động cho danh sách chi tiêu.
 
-Data: Xử lý dữ liệu với Hive (Local Database).
+---
 
-Domain: Chứa Business Logic (Entities, Repositories interface, UseCases).
+## 🏗️ Kiến trúc dự án
 
-Presentation: Giao diện người dùng với BLoC, Widgets và Pages.
+Dự án được xây dựng theo mô hình **Clean Architecture**, giúp tách biệt giao diện, business logic và tầng dữ liệu.
 
-🎨 Giao diện & Hiệu ứng
+Cấu trúc chính gồm:
 
-Material 3: Giao diện hiện đại, màu sắc tươi sáng.
+```text
+lib/
+├── core/
+│   ├── di/
+│   ├── error/
+│   └── usecase/
+│
+├── data/
+│   ├── models/
+│   ├── datasources/
+│   └── repositories/
+│
+├── domain/
+│   ├── entities/
+│   ├── repositories/
+│   └── usecases/
+│
+└── presentation/
+    ├── bloc/
+    ├── pages/
+    └── widgets/
+```
 
-Animations: Sử dụng animate_do để tạo hiệu ứng xuất hiện cho danh sách chi tiêu.
+### Core
 
-Charts: Tích hợp fl_chart để hiển thị biểu đồ phân bổ chi tiêu theo danh mục.
+Chứa các thành phần dùng chung cho toàn bộ ứng dụng:
 
-🛠 Các thư viện đã sử dụng
+* Dependency Injection với `get_it`.
+* Error handling.
+* Base UseCase.
 
-flutter_bloc: Quản lý trạng thái.
+### Data
 
-get_it & injectable: Dependency Injection.
+Chịu trách nhiệm xử lý và lưu trữ dữ liệu.
 
-hive_flutter: Lưu trữ dữ liệu local.
+Ứng dụng sử dụng **Hive** làm cơ sở dữ liệu local để lưu các khoản chi tiêu trên thiết bị.
 
-fl_chart: Vẽ biểu đồ.
+### Domain
 
-animate_do: Hiệu ứng mượt mà.
+Chứa **Business Logic** của ứng dụng, bao gồm:
 
-Các màn hình và tính năng
+* Entities.
+* Repository interfaces.
+* UseCases.
 
-1.Danh sách chi tiêu: Hiển thị tổng quan bằng biểu đồ tròn và danh sách chi tiết.
+Tầng Domain không phụ thuộc trực tiếp vào giao diện người dùng hoặc công nghệ lưu trữ dữ liệu.
 
-2.Thêm chi tiêu: Dialog cho phép nhập tên, số tiền và chọn danh mục.
+### Presentation
 
-3.Xóa chi tiêu: Sử dụng hành động vuốt (Swipe to dismiss).
+Chịu trách nhiệm hiển thị giao diện và quản lý trạng thái ứng dụng.
 
-Hướng dẫn chạy ứng dụng
+Bao gồm:
 
-1.Đảm bảo bạn đã cài đặt Flutter.
+* BLoC.
+* Pages.
+* Widgets.
 
-2.Chạy lệnh flutter pub get để cập nhật dependencies.
+---
 
-3.Chạy ứng dụng bằng flutter run.
+## 🎨 Giao diện & Hiệu ứng
+
+### Material 3
+
+Ứng dụng sử dụng **Material 3** để xây dựng giao diện hiện đại và nhất quán.
+
+### Animations
+
+Thư viện `animate_do` được sử dụng để tạo hiệu ứng xuất hiện cho danh sách các khoản chi tiêu.
+
+### Charts
+
+Thư viện `fl_chart` được sử dụng để xây dựng biểu đồ tròn, giúp người dùng trực quan hóa tỷ lệ chi tiêu theo từng danh mục.
+
+---
+
+## 🛠️ Công nghệ & Thư viện
+
+| Thư viện       | Chức năng                            |
+| -------------- | ------------------------------------ |
+| `flutter_bloc` | Quản lý trạng thái ứng dụng          |
+| `get_it`       | Dependency Injection                 |
+| `injectable`   | Hỗ trợ cấu hình Dependency Injection |
+| `hive_flutter` | Lưu trữ dữ liệu local                |
+| `fl_chart`     | Hiển thị biểu đồ chi tiêu            |
+| `animate_do`   | Tạo hiệu ứng chuyển động             |
+| Flutter        | Framework phát triển ứng dụng        |
+
+---
+
+## 📱 Các màn hình & Tính năng
+
+### 1. 📊 Danh sách chi tiêu
+
+Màn hình chính cung cấp cái nhìn tổng quan về tình hình chi tiêu.
+
+Bao gồm:
+
+* Biểu đồ tròn phân bổ chi tiêu theo danh mục.
+* Danh sách các khoản chi tiêu.
+* Thông tin chi tiết của từng khoản chi tiêu.
+
+---
+
+### 2. ➕ Thêm chi tiêu
+
+Người dùng có thể thêm một khoản chi tiêu mới thông qua Dialog.
+
+Thông tin cần nhập:
+
+* Tên khoản chi tiêu.
+* Số tiền.
+* Danh mục chi tiêu.
+
+Sau khi thêm, khoản chi tiêu sẽ được lưu vào cơ sở dữ liệu local.
+
+---
+
+### 3. 🗑️ Xóa chi tiêu
+
+Người dùng có thể xóa một khoản chi tiêu bằng thao tác **Swipe to Dismiss**.
+
+```text
+Vuốt khoản chi tiêu
+        ↓
+Xóa khoản chi tiêu
+        ↓
+Cập nhật danh sách
+```
+
+---
+
+## 🔄 Luồng hoạt động
+
+```text
+┌──────────────────────┐
+│   Expense Tracker    │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│ Danh sách chi tiêu   │
+└──────────┬───────────┘
+           │
+     ┌─────┴─────┐
+     │           │
+     ▼           ▼
+  Thêm mới      Xóa
+     │           │
+     ▼           ▼
+   Dialog    Swipe Dismiss
+     │
+     ▼
+  Hive Local
+     │
+     ▼
+ Cập nhật BLoC
+     │
+     ▼
+ Cập nhật UI
+```
+
+---
+
+## 📂 Clean Architecture Flow
+
+Luồng xử lý dữ liệu trong ứng dụng:
+
+```text
+Presentation
+     │
+     ▼
+   BLoC
+     │
+     ▼
+  UseCase
+     │
+     ▼
+Repository Interface
+     │
+     ▼
+Repository Implementation
+     │
+     ▼
+Hive Local Database
+```
+
+Cách tổ chức này giúp các thành phần được phân tách rõ ràng và dễ bảo trì.
+
+---
+
+## 🚀 Hướng dẫn chạy ứng dụng
+
+### 1. Cài đặt Flutter
+
+Đảm bảo máy tính đã cài đặt **Flutter** và Flutter SDK hoạt động bình thường.
+
+Kiểm tra bằng:
+
+```bash
+flutter doctor
+```
+
+---
+
+### 2. Clone project
+
+```bash
+git clone <repository-url>
+```
+
+Di chuyển vào thư mục project:
+
+```bash
+cd expense_tracker
+```
+
+---
+
+### 3. Cài đặt dependencies
+
+Chạy:
+
+```bash
+flutter pub get
+```
+
+---
+
+### 4. Chạy ứng dụng
+
+```bash
+flutter run
+```
+
+Flutter sẽ build và chạy ứng dụng trên thiết bị hoặc emulator đang được kết nối.
+
+---
+
+## 📋 Yêu cầu môi trường
+
+Trước khi chạy project, cần có:
+
+* Flutter SDK.
+* Dart SDK đi kèm Flutter.
+* Android Studio hoặc môi trường phát triển Flutter tương đương.
+* Android Emulator hoặc thiết bị Android để chạy ứng dụng.
+
+---
+
+## 🎯 Mục tiêu của Project
+
+Project được xây dựng nhằm minh họa việc phát triển một ứng dụng Flutter có cấu trúc rõ ràng bằng **Clean Architecture**, đồng thời áp dụng:
+
+* State Management với BLoC.
+* Dependency Injection.
+* Local Database.
+* Navigation.
+* Data Visualization.
+* UI Animation.
+* Material 3.
+
+---
+
+## 👨‍💻 Author
+
+**Expense Tracker App**
+
+Built with ❤️ using Flutter.
