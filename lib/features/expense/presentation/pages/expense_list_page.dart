@@ -52,11 +52,19 @@ class ExpenseListView extends StatelessWidget {
               return const Center(child: CircularProgressIndicator());
             } else if (state is ExpenseLoaded) {
               final expenses = state.expenses;
-              final totalAmount = expenses.fold(0.0, (sum, item) => sum + item.amount);
+              final totalIncome = expenses
+                  .where((e) => e.type == TransactionType.income)
+                  .fold(0.0, (sum, item) => sum + item.amount);
+              final totalExpense = expenses
+                  .where((e) => e.type == TransactionType.expense)
+                  .fold(0.0, (sum, item) => sum + item.amount);
+              final balance = totalIncome - totalExpense;
+
               if (expenses.isEmpty) {
                 return const Center(
                   child: Text(
-                      'Chưa có khoản phi phí nào. Hãy thêm vào nhé!',
+                      'Chưa có dữ liệu. Hãy thêm vào nhé!',
+                      style: TextStyle(color: Colors.white, fontSize: 18),
                   ),
                 );
               }
@@ -66,25 +74,84 @@ class ExpenseListView extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Card(
-                        elevation: 4,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
+                        elevation: 8,
+                        shadowColor: Colors.black54,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                        child: Container(
+                          padding: const EdgeInsets.all(20.0),
                           child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text('Phân bổ chi phí', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                              ExpenseSummaryChart(expenses: expenses),
-                              const SizedBox(height: 10),
-                              Text(
-                                'Tổng chi tiêu: ${NumberFormat.currency(
-                                  locale: 'vi_VN',
-                                  symbol: 'VNĐ',
-                                  decimalDigits: 0,
-                                ).format(totalAmount)}',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Theme.of(context).colorScheme.primary,
-                                  fontWeight: FontWeight.w500,
+                              const Row(
+                                children: [
+                                  Icon(Icons.analytics_outlined, color: Colors.blueGrey, size: 20),
+                                  SizedBox(width: 8),
+                                  Text('Tóm tắt tài chính', 
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blueGrey)),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Container(
+                                padding: const EdgeInsets.symmetric(vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[50],
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  children: [
+                                    _buildSummaryItem('THU NHẬP', totalIncome, Colors.green),
+                                    Container(width: 1, height: 30, color: Colors.grey[300]),
+                                    _buildSummaryItem('CHI TIÊU', totalExpense, Colors.red),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              const Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text('Phân bổ chi tiêu', 
+                                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.grey)),
+                              ),
+                              const SizedBox(height: 12),
+                              Center(
+                                child: SizedBox(
+                                  height: 150,
+                                  child: ExpenseSummaryChart(expenses: expenses),
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: balance >= 0 
+                                      ? [Colors.green.withOpacity(0.1), Colors.green.withOpacity(0.05)]
+                                      : [Colors.red.withOpacity(0.1), Colors.red.withOpacity(0.05)],
+                                  ),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: balance >= 0 ? Colors.green.withOpacity(0.3) : Colors.red.withOpacity(0.3),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text('SỐ DƯ', 
+                                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.blueGrey, letterSpacing: 1.1)),
+                                    Text(
+                                      NumberFormat.currency(
+                                        locale: 'vi_VN',
+                                        symbol: '₫',
+                                        decimalDigits: 0,
+                                      ).format(balance),
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        color: balance >= 0 ? Colors.green[800] : Colors.red[800],
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
@@ -98,13 +165,18 @@ class ExpenseListView extends StatelessWidget {
                       itemCount: expenses.length,
                       itemBuilder: (context, index) {
                         final expense = expenses[index];
+                        final isIncome = expense.type == TransactionType.income;
                         return FadeInLeft(
                           delay: Duration(milliseconds: 100 * index),
                           child: Dismissible(
                             key: Key(expense.id),
                             direction: DismissDirection.endToStart,
                             background: Container(
-                              color: Colors.red,
+                              margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                               alignment: Alignment.centerRight,
                               padding: const EdgeInsets.only(right: 20),
                               child: const Icon(Icons.delete, color: Colors.white),
@@ -114,9 +186,10 @@ class ExpenseListView extends StatelessWidget {
                             },
                             child: Card(
                               margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                              elevation: 2,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              elevation: 3,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                               child: ListTile(
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                 onLongPress: () async {
                                   final updatedExpense = await context.push<Expense>(
                                     '/edit',
@@ -126,22 +199,53 @@ class ExpenseListView extends StatelessWidget {
                                     context.read<ExpenseBloc>().add(UpdateExpenseEvent(updatedExpense));
                                   }
                                 },
-                                leading: CircleAvatar(
-                                  backgroundColor: Colors.red,
-                                  child: Icon(
-                                    _getIcon(expense.category),
-                                    color: Colors.white,
-                                  ),
+                                leading: Stack(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 25,
+                                      backgroundColor: _getCategoryColor(expense.category).withOpacity(0.2),
+                                      child: Icon(
+                                        _getIcon(expense.category),
+                                        color: _getCategoryColor(expense.category),
+                                        size: 28,
+                                      ),
+                                    ),
+                                    Positioned(
+                                      right: 0,
+                                      bottom: 0,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(2),
+                                        decoration: BoxDecoration(
+                                          color: isIncome ? Colors.green : Colors.red,
+                                          shape: BoxShape.circle,
+                                          border: Border.all(color: Colors.white, width: 2),
+                                        ),
+                                        child: Icon(
+                                          isIncome ? Icons.arrow_upward : Icons.arrow_downward,
+                                          color: Colors.white,
+                                          size: 12,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                title: Text(expense.title, style: const TextStyle(fontWeight: FontWeight.w600)),
-                                subtitle: Text(DateFormat('dd MMM yyyy').format(expense.date)),
+                                title: Text(expense.title, 
+                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                subtitle: Text(
+                                  DateFormat('dd/MM/yyyy').format(expense.date),
+                                  style: TextStyle(color: Colors.grey[600]),
+                                ),
                                 trailing: Text(
-                                  NumberFormat.currency(
+                                  '${isIncome ? '+' : '-'}${NumberFormat.currency(
                                     locale: 'vi_VN',
-                                    symbol: 'VNĐ',
+                                    symbol: '',
                                     decimalDigits: 0,
-                                  ).format(expense.amount),
-                                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
+                                  ).format(expense.amount)}₫',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold, 
+                                    fontSize: 17,
+                                    color: isIncome ? Colors.green[700] : Colors.red[700],
+                                  ),
                                 ),
                               ),
                             ),
@@ -171,13 +275,44 @@ class ExpenseListView extends StatelessWidget {
     );
   }
 
+  Widget _buildSummaryItem(String label, double amount, Color color) {
+    return Column(
+      children: [
+        Text(label, style: const TextStyle(fontSize: 14, color: Colors.blueGrey)),
+        const SizedBox(height: 5),
+        Text(
+          NumberFormat.currency(
+            locale: 'vi_VN',
+            symbol: '₫',
+            decimalDigits: 0,
+          ).format(amount),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color),
+        ),
+      ],
+    );
+  }
+
   IconData _getIcon(String category) {
     switch (category.toLowerCase()) {
       case 'đồ ăn': return Icons.restaurant;
       case 'đi lại': return Icons.directions_bus;
       case 'mua sắm': return Icons.shopping_bag;
       case 'hóa đơn': return Icons.receipt_long;
+      case 'lương': return Icons.payments;
+      case 'quà tặng': return Icons.card_giftcard;
       default: return Icons.category;
+    }
+  }
+
+  Color _getCategoryColor(String category) {
+    switch (category.toLowerCase()) {
+      case 'đồ ăn': return Colors.orange;
+      case 'đi lại': return Colors.blue;
+      case 'mua sắm': return Colors.purple;
+      case 'hóa đơn': return Colors.red;
+      case 'lương': return Colors.green;
+      case 'quà tặng': return Colors.pink;
+      default: return Colors.blueGrey;
     }
   }
 }

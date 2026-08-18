@@ -1,0 +1,8 @@
+- [x] Cập nhật Domain Layer (Entity & Enum)
+- [x] Cập nhật Data Layer (Model & Hive adapter)
+- [x] Chạy `build_runner` để cập nhật Hive TypeAdapter
+- [x] Cập nhật UI trang Thêm/Sửa (`AddExpensePage`)
+- [x] Cập nhật UI trang Danh sách (`ExpenseListPage`)
+- [x] Cập nhật Biểu đồ (`ExpenseSummaryChart`)
+- [x] Tách biệt các thành phần trong phần Tóm tắt (UI Improvement)
+- [x] Kiểm tra và hoàn thiện

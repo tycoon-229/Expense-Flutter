@@ -15,6 +15,8 @@ class ExpenseModel extends Expense {
   final DateTime date;
   @HiveField(4)
   final String category;
+  @HiveField(5)
+  final String? typeString;
 
   const ExpenseModel({
     required this.id,
@@ -22,12 +24,14 @@ class ExpenseModel extends Expense {
     required this.amount,
     required this.date,
     required this.category,
+    this.typeString,
   }) : super(
           id: id,
           title: title,
           amount: amount,
           date: date,
           category: category,
+          type: typeString == 'income' ? TransactionType.income : TransactionType.expense,
         );
 
   factory ExpenseModel.fromEntity(Expense expense) {
@@ -37,9 +41,11 @@ class ExpenseModel extends Expense {
       amount: expense.amount,
       date: expense.date,
       category: expense.category,
+      typeString: expense.type.name,
     );
   }
 
+  @override
   Expense toEntity() {
     return Expense(
       id: id,
@@ -47,6 +53,7 @@ class ExpenseModel extends Expense {
       amount: amount,
       date: date,
       category: category,
+      type: typeString == 'income' ? TransactionType.income : TransactionType.expense,
     );
   }
 }

@@ -10,24 +10,27 @@ class ExpenseSummaryChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final groupedData = groupBy(expenses, (Expense e) => e.category);
+    final expenseOnly = expenses.where((e) => e.type == TransactionType.expense).toList();
+    if (expenseOnly.isEmpty) return const SizedBox(height: 100, child: Center(child: Text('Không có dữ liệu chi tiêu')));
+
+    final groupedData = groupBy(expenseOnly, (Expense e) => e.category);
     final sections = groupedData.entries.map((entry) {
       final total = entry.value.fold(0.0, (sum, item) => sum + item.amount);
       return PieChartSectionData(
         value: total,
-        title: entry.key,
-        radius: 50,
-        titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+        title: '${entry.key}\n${(total / expenseOnly.fold(0.0, (s, i) => s + i.amount) * 100).toStringAsFixed(0)}%',
+        radius: 50, // Giảm từ 60 xuống 50 để có thêm khoảng trống cho text
+        titleStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white),
         color: _getCategoryColor(entry.key),
       );
     }).toList();
 
-    return AspectRatio(
-      aspectRatio: 1.5,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: PieChart(
         PieChartData(
           sections: sections,
-          centerSpaceRadius: 40,
+          centerSpaceRadius: 30, // Giảm nhẹ center radius
           sectionsSpace: 2,
         ),
       ),
@@ -40,7 +43,9 @@ class ExpenseSummaryChart extends StatelessWidget {
       case 'đi lại': return Colors.blue;
       case 'mua sắm': return Colors.purple;
       case 'hóa đơn': return Colors.red;
-      default: return Colors.grey;
+      case 'lương': return Colors.green;
+      case 'quà tặng': return Colors.pink;
+      default: return Colors.blueGrey;
     }
   }
 }
