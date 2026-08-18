@@ -26,7 +26,7 @@ class _ExpenseSummaryChartState extends State<ExpenseSummaryChart> {
     if (expenseOnly.isEmpty) {
       return const SizedBox(
         height: 100,
-        child: Center(child: Text('Không có dữ liệu chi tiêu', style: TextStyle(color: Colors.white70))),
+        child: Center(child: Text('KHÔNG CÓ DỮ LIỆU THU - CHI', style: TextStyle(color: Colors.white70))),
       );
     }
 

@@ -36,7 +36,7 @@ class _ExpenseListViewState extends State<ExpenseListView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Theo dõi Chi phí'),
+        title: const Text('THEO DÕI THU - CHI'),
         centerTitle: true,
         titleTextStyle: const TextStyle(
           fontWeight: FontWeight.bold,
@@ -70,7 +70,7 @@ class _ExpenseListViewState extends State<ExpenseListView> {
               if (expenses.isEmpty) {
                 return const Center(
                   child: Text(
-                      'Chưa có dữ liệu. Hãy thêm vào nhé!',
+                      'CHƯA CÓ DỮ LIỆU, HÃY THÊM VÀO NHÉ!',
                       style: TextStyle(color: Colors.white, fontSize: 18),
                   ),
                 );
@@ -79,7 +79,7 @@ class _ExpenseListViewState extends State<ExpenseListView> {
                 children: [
                   FadeInDown(
                     child: Padding(
-                      padding: const EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.all(4.0),
                       child: Card(
                         elevation: 8,
                         shadowColor: Colors.black54,
@@ -93,7 +93,7 @@ class _ExpenseListViewState extends State<ExpenseListView> {
                                 children: [
                                   Icon(Icons.analytics_outlined, color: Colors.blueGrey, size: 20),
                                   SizedBox(width: 8),
-                                  Text('Tóm tắt tài chính', 
+                                  Text('TÓM TẮT TÀI CHÍNH',
                                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blueGrey)),
                                 ],
                               ),
@@ -115,9 +115,14 @@ class _ExpenseListViewState extends State<ExpenseListView> {
                               ),
                               const SizedBox(height: 16),
                               const Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text('Phân bổ chi tiêu', 
-                                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.grey)),
+                                alignment: Alignment.center,
+                                child: Text('PHÂN BỔ CHI TIÊU',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blueGrey
+                                  )
+                                ),
                               ),
                               const SizedBox(height: 12),
                               Center(
@@ -153,7 +158,7 @@ class _ExpenseListViewState extends State<ExpenseListView> {
                                     Text(
                                       NumberFormat.currency(
                                         locale: 'vi_VN',
-                                        symbol: '₫',
+                                        symbol: 'VNĐ',
                                         decimalDigits: 0,
                                       ).format(balance),
                                       style: TextStyle(
@@ -289,7 +294,11 @@ class _ExpenseListViewState extends State<ExpenseListView> {
             context.read<ExpenseBloc>().add(AddExpenseEvent(expense));
           }
         },
-        child: const Icon(Icons.add),
+        backgroundColor: Colors.red,
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
       ),
     );
   }
@@ -302,7 +311,7 @@ class _ExpenseListViewState extends State<ExpenseListView> {
         Text(
           NumberFormat.currency(
             locale: 'vi_VN',
-            symbol: '₫',
+            symbol: 'VNĐ',
             decimalDigits: 0,
           ).format(amount),
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color),
