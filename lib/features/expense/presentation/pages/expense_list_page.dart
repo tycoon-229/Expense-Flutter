@@ -22,8 +22,15 @@ class ExpenseListPage extends StatelessWidget {
   }
 }
 
-class ExpenseListView extends StatelessWidget {
+class ExpenseListView extends StatefulWidget {
   const ExpenseListView({super.key});
+
+  @override
+  State<ExpenseListView> createState() => _ExpenseListViewState();
+}
+
+class _ExpenseListViewState extends State<ExpenseListView> {
+  String? selectedCategory;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +38,7 @@ class ExpenseListView extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Theo dõi Chi phí'),
         centerTitle: true,
-        titleTextStyle: TextStyle(
+        titleTextStyle: const TextStyle(
           fontWeight: FontWeight.bold,
           color: Colors.white,
           fontSize: 30
@@ -114,9 +121,13 @@ class ExpenseListView extends StatelessWidget {
                               ),
                               const SizedBox(height: 12),
                               Center(
-                                child: SizedBox(
-                                  height: 150,
-                                  child: ExpenseSummaryChart(expenses: expenses),
+                                child: ExpenseSummaryChart(
+                                  expenses: expenses,
+                                  onCategorySelected: (category) {
+                                    setState(() {
+                                      selectedCategory = category;
+                                    });
+                                  },
                                 ),
                               ),
                               const SizedBox(height: 24),
@@ -126,12 +137,12 @@ class ExpenseListView extends StatelessWidget {
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
                                     colors: balance >= 0 
-                                      ? [Colors.green.withOpacity(0.1), Colors.green.withOpacity(0.05)]
-                                      : [Colors.red.withOpacity(0.1), Colors.red.withOpacity(0.05)],
+                                      ? [Colors.green.withValues(alpha: 0.1), Colors.green.withValues(alpha: 0.05)]
+                                      : [Colors.red.withValues(alpha: 0.1), Colors.red.withValues(alpha: 0.05)],
                                   ),
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
-                                    color: balance >= 0 ? Colors.green.withOpacity(0.3) : Colors.red.withOpacity(0.3),
+                                    color: balance >= 0 ? Colors.green.withValues(alpha: 0.3) : Colors.red.withValues(alpha: 0.3),
                                   ),
                                 ),
                                 child: Row(
@@ -161,95 +172,103 @@ class ExpenseListView extends StatelessWidget {
                     ),
                   ),
                   Expanded(
-                    child: ListView.builder(
-                      itemCount: expenses.length,
-                      itemBuilder: (context, index) {
-                        final expense = expenses[index];
-                        final isIncome = expense.type == TransactionType.income;
-                        return FadeInLeft(
-                          delay: Duration(milliseconds: 100 * index),
-                          child: Dismissible(
-                            key: Key(expense.id),
-                            direction: DismissDirection.endToStart,
-                            background: Container(
-                              margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
-                              decoration: BoxDecoration(
-                                color: Colors.red,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              alignment: Alignment.centerRight,
-                              padding: const EdgeInsets.only(right: 20),
-                              child: const Icon(Icons.delete, color: Colors.white),
-                            ),
-                            onDismissed: (_) {
-                              context.read<ExpenseBloc>().add(DeleteExpenseEvent(expense.id));
-                            },
-                            child: Card(
-                              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                              elevation: 3,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                              child: ListTile(
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                onLongPress: () async {
-                                  final updatedExpense = await context.push<Expense>(
-                                    '/edit',
-                                    extra: expense,
-                                  );
-                                  if (updatedExpense != null && context.mounted) {
-                                    context.read<ExpenseBloc>().add(UpdateExpenseEvent(updatedExpense));
-                                  }
+                    child: Builder(
+                      builder: (context) {
+                        final filteredExpenses = selectedCategory == null
+                            ? expenses
+                            : expenses.where((e) => e.category == selectedCategory).toList();
+
+                        return ListView.builder(
+                          itemCount: filteredExpenses.length,
+                          itemBuilder: (context, index) {
+                            final expense = filteredExpenses[index];
+                            final isIncome = expense.type == TransactionType.income;
+                            return FadeInLeft(
+                              delay: Duration(milliseconds: 100 * index),
+                              child: Dismissible(
+                                key: Key(expense.id),
+                                direction: DismissDirection.endToStart,
+                                background: Container(
+                                  margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
+                                  decoration: BoxDecoration(
+                                    color: Colors.red,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  alignment: Alignment.centerRight,
+                                  padding: const EdgeInsets.only(right: 20),
+                                  child: const Icon(Icons.delete, color: Colors.white),
+                                ),
+                                onDismissed: (_) {
+                                  context.read<ExpenseBloc>().add(DeleteExpenseEvent(expense.id));
                                 },
-                                leading: Stack(
-                                  children: [
-                                    CircleAvatar(
-                                      radius: 25,
-                                      backgroundColor: _getCategoryColor(expense.category).withOpacity(0.2),
-                                      child: Icon(
-                                        _getIcon(expense.category),
-                                        color: _getCategoryColor(expense.category),
-                                        size: 28,
+                                child: Card(
+                                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                                  elevation: 3,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                                  child: ListTile(
+                                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                    onLongPress: () async {
+                                      final updatedExpense = await context.push<Expense>(
+                                        '/edit',
+                                        extra: expense,
+                                      );
+                                      if (updatedExpense != null && context.mounted) {
+                                        context.read<ExpenseBloc>().add(UpdateExpenseEvent(updatedExpense));
+                                      }
+                                    },
+                                    leading: Stack(
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 25,
+                                          backgroundColor: _getCategoryColor(expense.category).withValues(alpha: 0.2),
+                                          child: Icon(
+                                            _getIcon(expense.category),
+                                            color: _getCategoryColor(expense.category),
+                                            size: 28,
+                                          ),
+                                        ),
+                                        Positioned(
+                                          right: 0,
+                                          bottom: 0,
+                                          child: Container(
+                                            padding: const EdgeInsets.all(2),
+                                            decoration: BoxDecoration(
+                                              color: isIncome ? Colors.green : Colors.red,
+                                              shape: BoxShape.circle,
+                                              border: Border.all(color: Colors.white, width: 2),
+                                            ),
+                                            child: Icon(
+                                              isIncome ? Icons.arrow_upward : Icons.arrow_downward,
+                                              color: Colors.white,
+                                              size: 12,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    title: Text(expense.title, 
+                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                    subtitle: Text(
+                                      DateFormat('dd/MM/yyyy').format(expense.date),
+                                      style: TextStyle(color: Colors.grey[600]),
+                                    ),
+                                    trailing: Text(
+                                      '${isIncome ? '+' : '-'}${NumberFormat.currency(
+                                        locale: 'vi_VN',
+                                        symbol: '',
+                                        decimalDigits: 0,
+                                      ).format(expense.amount)}₫',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold, 
+                                        fontSize: 17,
+                                        color: isIncome ? Colors.green[700] : Colors.red[700],
                                       ),
                                     ),
-                                    Positioned(
-                                      right: 0,
-                                      bottom: 0,
-                                      child: Container(
-                                        padding: const EdgeInsets.all(2),
-                                        decoration: BoxDecoration(
-                                          color: isIncome ? Colors.green : Colors.red,
-                                          shape: BoxShape.circle,
-                                          border: Border.all(color: Colors.white, width: 2),
-                                        ),
-                                        child: Icon(
-                                          isIncome ? Icons.arrow_upward : Icons.arrow_downward,
-                                          color: Colors.white,
-                                          size: 12,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                title: Text(expense.title, 
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                                subtitle: Text(
-                                  DateFormat('dd/MM/yyyy').format(expense.date),
-                                  style: TextStyle(color: Colors.grey[600]),
-                                ),
-                                trailing: Text(
-                                  '${isIncome ? '+' : '-'}${NumberFormat.currency(
-                                    locale: 'vi_VN',
-                                    symbol: '',
-                                    decimalDigits: 0,
-                                  ).format(expense.amount)}₫',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold, 
-                                    fontSize: 17,
-                                    color: isIncome ? Colors.green[700] : Colors.red[700],
                                   ),
                                 ),
                               ),
-                            ),
-                          ),
+                            );
+                          },
                         );
                       },
                     ),
