@@ -48,7 +48,7 @@ class _ExpenseListViewState extends State<ExpenseListView> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.red, Colors.black],
+            colors: [Colors.red,Colors.deepOrangeAccent, Colors.white10],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter
           )
