@@ -48,7 +48,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('🔔 Đã tự động ghi nhận ${due.length} khoản thu chi cố định tháng này!'),
+            content: Text('🔔 Đã tự động ghi nhận ${due.length} khoản thu chi định kỳ!'),
             backgroundColor: Colors.deepPurple,
             duration: const Duration(seconds: 4),
           ),

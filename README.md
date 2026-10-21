@@ -129,6 +129,42 @@ CREATE TABLE IF NOT EXISTS expenses (
   note TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- 3. Bảng Recurring Transactions (Khoản thu chi cố định & định kỳ)
+CREATE TABLE IF NOT EXISTS recurring_transactions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  amount NUMERIC NOT NULL,
+  type TEXT NOT NULL,                         -- 'expense' hoặc 'income'
+  category_id UUID REFERENCES categories(id) ON DELETE SET NULL,
+  category_name TEXT,
+  category_color TEXT,
+  category_icon TEXT,
+  frequency TEXT NOT NULL DEFAULT 'monthly',  -- 'daily', 'weekly', 'monthly', 'yearly'
+  day_of_month INT DEFAULT 1,                 -- 1 -> 31
+  day_of_week INT DEFAULT 1,                  -- 1 (Thứ 2) -> 7 (Chủ nhật)
+  month_of_year INT DEFAULT 1,                -- 1 -> 12
+  note TEXT,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  last_executed_key TEXT,                     -- Khóa đánh dấu lần chạy gần nhất
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Bật Row Level Security (RLS) cho recurring_transactions
+ALTER TABLE recurring_transactions ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view their own recurring transactions"
+ON recurring_transactions FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert their own recurring transactions"
+ON recurring_transactions FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their own recurring transactions"
+ON recurring_transactions FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete their own recurring transactions"
+ON recurring_transactions FOR DELETE USING (auth.uid() = user_id);
 ```
 
 ---
