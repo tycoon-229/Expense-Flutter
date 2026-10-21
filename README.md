@@ -40,6 +40,11 @@
 * Hiệu ứng chuyển động mượt mà (FadeInDown, FadeInUp, SlideIn) bằng thư viện **animate_do**.
 * Thanh điều hướng đáy 4 tab tiện lợi: **Sổ chi tiêu**, **Thống kê**, **Danh mục**, **Cố định**.
 
+### 8. 👤 Hồ sơ cá nhân (Profile & Customization)
+* **Avatar & Ảnh bìa tùy biến:** Hỗ trợ tải lên ảnh tĩnh hoặc ảnh động GIF lưu trữ trên Supabase Storage bucket `Images`.
+* **Thông tin cá nhân:** Tùy chỉnh Họ và tên, Số điện thoại, Địa chỉ và liên kết email tài khoản.
+* **Đồng bộ tự động:** Dữ liệu hồ sơ đồng bộ trực tiếp với bảng `profiles` và tự động khởi tạo khi đăng ký tài khoản.
+
 ---
 
 ## 🏗️ Cấu trúc dự án (Clean Architecture)
@@ -69,6 +74,10 @@ lib/
 │   │   └── presentation/ (bloc, pages, widgets)
 │   │
 │   ├── home/                             # Thanh điều hướng chính (MainNavigationPage)
+│   │   └── presentation/pages/
+│   │
+│   ├── profile/                          # Hồ sơ cá nhân (Avatar, Ảnh bìa, Thông tin)
+│   │   ├── data/ (datasources, models)
 │   │   └── presentation/pages/
 │   │
 │   └── recurring/                        # Khoản thu chi cố định hàng tháng
@@ -165,6 +174,77 @@ ON recurring_transactions FOR UPDATE USING (auth.uid() = user_id);
 
 CREATE POLICY "Users can delete their own recurring transactions"
 ON recurring_transactions FOR DELETE USING (auth.uid() = user_id);
+
+-- 4. Bảng Profiles (Hồ sơ người dùng)
+CREATE TABLE IF NOT EXISTS profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  email TEXT,
+  full_name TEXT,
+  phone TEXT,
+  address TEXT,
+  avatar_url TEXT,
+  cover_url TEXT,
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Bật RLS cho profiles
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view their own profile"
+ON profiles FOR SELECT USING (auth.uid() = id);
+
+CREATE POLICY "Users can insert their own profile"
+ON profiles FOR INSERT WITH CHECK (auth.uid() = id);
+
+CREATE POLICY "Users can update their own profile"
+ON profiles FOR UPDATE USING (auth.uid() = id);
+
+-- Trigger tự động tạo profile khi đăng ký tài khoản mới
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.profiles (id, email, full_name, created_at, updated_at)
+  VALUES (
+    NEW.id,
+    NEW.email,
+    COALESCE(NEW.raw_user_meta_data->>'full_name', ''),
+    NOW(),
+    NOW()
+  )
+  ON CONFLICT (id) DO NOTHING;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
+
+-- 5. Storage Bucket "Images" (Lưu Avatar và Ảnh bìa tĩnh / GIF)
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('Images', 'Images', true)
+ON CONFLICT (id) DO NOTHING;
+
+CREATE POLICY "Public Access Images"
+ON storage.objects FOR SELECT
+USING (bucket_id = 'Images');
+
+CREATE POLICY "Allow authenticated uploads to Images"
+ON storage.objects FOR INSERT
+TO authenticated
+WITH CHECK (bucket_id = 'Images');
+
+CREATE POLICY "Allow authenticated updates in Images"
+ON storage.objects FOR UPDATE
+TO authenticated
+USING (bucket_id = 'Images');
+
+CREATE POLICY "Allow authenticated deletes in Images"
+ON storage.objects FOR DELETE
+TO authenticated
+USING (bucket_id = 'Images');
 ```
 
 ---

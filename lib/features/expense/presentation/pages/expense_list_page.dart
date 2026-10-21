@@ -82,6 +82,13 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
         centerTitle: false,
         actions: [
           IconButton(
+            tooltip: 'Hồ sơ cá nhân',
+            icon: const Icon(Icons.account_circle_outlined, color: Colors.white),
+            onPressed: () {
+              context.push('/profile');
+            },
+          ),
+          IconButton(
             tooltip: 'Cài đặt thông báo',
             icon: const Icon(Icons.notifications_active_outlined, color: Colors.white),
             onPressed: () {

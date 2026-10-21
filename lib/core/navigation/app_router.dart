@@ -9,6 +9,7 @@ import '../../features/expense/domain/entities/expense.dart';
 import '../../features/expense/presentation/pages/add_expense_page.dart';
 import '../../features/expense/presentation/pages/expense_analytics_page.dart';
 import '../../features/home/presentation/pages/main_navigation_page.dart';
+import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../features/recurring/presentation/pages/recurring_transactions_page.dart';
 import '../services/presentation/pages/notification_settings_page.dart';
 
@@ -83,6 +84,10 @@ class AppRouter {
       GoRoute(
         path: '/notification-settings',
         builder: (context, state) => const NotificationSettingsPage(),
+      ),
+      GoRoute(
+        path: '/profile',
+        builder: (context, state) => const ProfilePage(),
       ),
     ],
   );
