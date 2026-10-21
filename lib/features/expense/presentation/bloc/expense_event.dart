@@ -12,7 +12,7 @@ class LoadExpenses extends ExpenseEvent {}
 
 class AddExpenseEvent extends ExpenseEvent {
   final Expense expense;
-  AddExpenseEvent(this.expense);
+  const AddExpenseEvent(this.expense);
 
   @override
   List<Object?> get props => [expense];
@@ -20,7 +20,7 @@ class AddExpenseEvent extends ExpenseEvent {
 
 class DeleteExpenseEvent extends ExpenseEvent {
   final String id;
-  DeleteExpenseEvent(this.id);
+  const DeleteExpenseEvent(this.id);
 
   @override
   List<Object?> get props => [id];
@@ -28,7 +28,7 @@ class DeleteExpenseEvent extends ExpenseEvent {
 
 class UpdateExpenseEvent extends ExpenseEvent {
   final Expense expense;
-  UpdateExpenseEvent(this.expense);
+  const UpdateExpenseEvent(this.expense);
 
   @override
   List<Object?> get props => [expense];

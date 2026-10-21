@@ -26,13 +26,14 @@ class _ExpenseSummaryChartState extends State<ExpenseSummaryChart> {
     if (expenseOnly.isEmpty) {
       return const SizedBox(
         height: 100,
-        child: Center(child: Text('KHÔNG CÓ DỮ LIỆU THU - CHI', style: TextStyle(color: Colors.white70))),
+        child: Center(child: Text('KHÔNG CÓ DỮ LIỆU CHI TIÊU', style: TextStyle(color: Colors.blueGrey))),
       );
     }
 
-    final groupedData = groupBy(expenseOnly, (Expense e) => e.category);
+    // Gom nhóm chi tiêu theo categoryName
+    final groupedData = groupBy(expenseOnly, (Expense e) => e.categoryName ?? 'Chưa phân loại');
     final categories = groupedData.keys.toList();
-    
+
     final sections = categories.asMap().entries.map((entry) {
       final index = entry.key;
       final category = entry.value;
@@ -40,12 +41,15 @@ class _ExpenseSummaryChartState extends State<ExpenseSummaryChart> {
       final total = items.fold(0.0, (sum, item) => sum + item.amount);
       final isTouched = index == touchedIndex;
 
+      // Lấy màu sắc động từ phần tử đầu tiên của nhóm
+      final catColor = _parseColor(items.first.categoryColor);
+
       return PieChartSectionData(
         value: total,
         title: isTouched ? '${(total / expenseOnly.fold(0.0, (s, i) => s + i.amount) * 100).toStringAsFixed(0)}%' : '',
         radius: isTouched ? 60 : 50,
         titleStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
-        color: _getCategoryColor(category),
+        color: catColor,
       );
     }).toList();
 
@@ -88,6 +92,9 @@ class _ExpenseSummaryChartState extends State<ExpenseSummaryChart> {
             children: categories.asMap().entries.map((entry) {
               final index = entry.key;
               final category = entry.value;
+              final items = groupedData[category]!;
+              final catColor = _parseColor(items.first.categoryColor);
+
               if (touchedIndex != -1 && touchedIndex != index) {
                 return const SizedBox.shrink();
               }
@@ -95,11 +102,11 @@ class _ExpenseSummaryChartState extends State<ExpenseSummaryChart> {
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: _Indicator(
-                  color: _getCategoryColor(category),
+                  color: catColor,
                   text: category,
                   isSquare: false,
                   size: touchedIndex == index ? 16 : 12,
-                  textColor: touchedIndex == index ? Colors.black : Colors.black,
+                  textColor: touchedIndex == index ? Colors.black : Colors.blueGrey,
                 ),
               );
             }).toList(),
@@ -109,15 +116,16 @@ class _ExpenseSummaryChartState extends State<ExpenseSummaryChart> {
     );
   }
 
-  Color _getCategoryColor(String category) {
-    switch (category.toLowerCase()) {
-      case 'đồ ăn': return Colors.orange;
-      case 'đi lại': return Colors.blue;
-      case 'mua sắm': return Colors.purple;
-      case 'hóa đơn': return Colors.red;
-      case 'lương': return Colors.green;
-      case 'quà tặng': return Colors.pink;
-      default: return Colors.blueGrey;
+  // Parse chuỗi mã màu Hex sang Flutter Color
+  Color _parseColor(String? hexString) {
+    if (hexString == null || hexString.isEmpty) return Colors.blueGrey;
+    try {
+      final buffer = StringBuffer();
+      if (hexString.length == 6 || hexString.length == 7) buffer.write('ff');
+      buffer.write(hexString.replaceFirst('#', ''));
+      return Color(int.parse(buffer.toString(), radix: 16));
+    } catch (_) {
+      return Colors.blueGrey;
     }
   }
 }
