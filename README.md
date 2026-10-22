@@ -1,19 +1,19 @@
-# 💰 Expense Tracker App
+# 💰 Expense Tracker App (Quản Lý Chi Tiêu)
 
-Ứng dụng quản lý tài chính và chi tiêu cá nhân hiện đại được xây dựng bằng **Flutter**, áp dụng kiến trúc chuẩn **Clean Architecture** kết hợp mô hình quản lý trạng thái **BLoC/Cubit**, cơ sở dữ liệu đám mây **Supabase**, hệ thống thông báo định kỳ và đồ thị phân tích thông minh.
+Ứng dụng quản lý tài chính và chi tiêu cá nhân hiện đại được xây dựng bằng **Flutter**, áp dụng kiến trúc chuẩn **Clean Architecture** kết hợp mô hình quản lý trạng thái **BLoC/Cubit**, cơ sở dữ liệu đám mây **Supabase**, hệ thống thông báo định kỳ, tối ưu hóa khởi động tức thì và đồ thị phân tích tài chính thông minh.
 
 ---
 
 ## ✨ Tính năng nổi bật
 
 ### 1. 💵 Quản lý Thu - Chi (Expense & Income)
-* **Ghi chép linh hoạt:** Hỗ trợ tạo, cập nhật, xóa nhanh các khoản thu và chi tiêu.
+* **Ghi chép linh hoạt:** Hỗ trợ tạo, cập nhật, xóa nhanh các khoản thu và chi tiêu cá nhân.
 * **Bộ lọc nâng cao:** Lọc theo loại giao dịch (Thu / Chi), theo tháng/năm, hoặc theo từng danh mục cụ thể.
 * **Thống kê tổng quan:** Thẻ số dư ví, tổng thu nhập và tổng chi tiêu được tính toán tự động tức thì.
 * **Tìm kiếm thông minh:** Tìm kiếm nhanh giao dịch theo tiêu đề hoặc ghi chú.
 
 ### 2. 📊 Báo cáo & Phân tích chuyên sâu (Analytics & Charts)
-* **Biểu đồ tròn (Pie Chart):** Trực quan hóa tỷ trọng chi tiêu hoặc thu nhập theo từng danh mục.
+* **Biểu đồ tròn (Pie Chart):** Trực quan hóa tỷ trọng chi tiêu hoặc thu nhập theo từng danh mục với `fl_chart`.
 * **Biểu đồ cột + đường xu hướng (Weekly Bar & Line Chart):** Theo dõi tình hình chi tiêu trong 7 ngày gần nhất, giúp nhận biết ngày chi tiêu đột biến và xu hướng tài chính.
 * **Thống kê theo tháng:** Chuyển đổi và theo dõi số liệu của các tháng trước đó dễ dàng.
 
@@ -23,24 +23,32 @@
 * **Thanh tiến trình trực quan:** Hiển thị phần trăm đã chi tiêu, tự động đổi màu cảnh báo khi gần chạm hoặc vượt quá hạn mức cho phép.
 
 ### 4. 🔁 Khoản thu chi cố định (Recurring Transactions)
-* **Quản lý khoản cố định:** Lưu trữ các khoản thu chi phát sinh đều đặn hàng tháng (tiền thuê nhà, hóa đơn điện nước, gói mạng, lương...).
-* **Tự động ghi nhận:** Ứng dụng tự động kiểm tra và ghi nhận các khoản thu chi đến ngày đáo hạn khi mở app, không sợ bị quên.
-* **Linh hoạt:** Bật/tắt trạng thái tự động ghi nhận bất cứ lúc nào.
+* **Đa dạng tần suất:** Thiết lập chu kỳ linh hoạt theo Ngày (Daily), Hàng tuần (Weekly), Hàng tháng (Monthly) hoặc Hàng năm (Yearly).
+* **Tự động ghi nhận thông minh:** Ứng dụng tự động kiểm tra và ghi nhận các khoản thu chi đến ngày đáo hạn khi mở app, không sợ bị quên.
+* **Linh hoạt quản lý:** Bật/tắt trạng thái tự động ghi nhận bất cứ lúc nào, hỗ trợ bộ nhớ đệm cục bộ ngoại tuyến.
 
 ### 5. 🔔 Nhắc nhở ghi chép hàng ngày (Daily Notifications)
-* **Thông báo định kỳ:** Gửi thông báo nhắc nhở người dùng cập nhật sổ thu chi vào khung giờ đã thiết lập.
+* **Thông báo định kỳ:** Gửi thông báo nhắc nhở người dùng cập nhật sổ thu chi vào khung giờ đã thiết lập mỗi ngày qua `flutter_local_notifications`.
 * **Trang cài đặt thông báo:** Tùy chọn giờ/phút nhắc nhở, bật/tắt dịch vụ và nút kiểm tra thông báo thử nghiệm trực tiếp.
 
 ### 6. 🔐 Xác thực & Bảo mật (Authentication)
 * Đăng ký, đăng nhập an toàn thông qua **Supabase Authentication**.
 * Tự động điều hướng và bảo vệ luồng truy cập với **GoRouter**.
+* Tự động khôi phục phiên đăng nhập khi mở lại ứng dụng.
 
 ### 7. 🎨 Giao diện & Trải nghiệm (UI/UX)
-* Thiết kế chuẩn **Material 3** với bảng màu Deep Purple sang trọng.
-* Hiệu ứng chuyển động mượt mà (FadeInDown, FadeInUp, SlideIn) bằng thư viện **animate_do**.
+* Thiết kế chuẩn **Material 3** với bảng màu Deep Purple gradient sang trọng, hiện đại.
+* **Giao diện Đăng nhập / Đăng ký chuẩn Fintech:** Thiết kế Hero Header gradient, Form Card bo góc 24px, đổ bóng mềm mại cùng micro-animations.
+* **Màn hình Splash khởi động:** Màn hình chào với logo thương hiệu và hiệu ứng chuyển trang êm ái.
+* **Hiệu ứng chuyển động mượt mà:** Tích hợp `animate_do` (FadeInDown, FadeInUp, SlideIn).
 * Thanh điều hướng đáy 4 tab tiện lợi: **Sổ chi tiêu**, **Thống kê**, **Danh mục**, **Cố định**.
 
-### 8. 👤 Hồ sơ cá nhân (Profile & Customization)
+### 8. ⚡ Tối ưu hóa hiệu năng & Khởi động tức thì (Performance & Cold Start)
+* **Khởi động siêu tốc (Cold Start Optimization):** Tách biệt các dịch vụ nền tảng nặng (thông báo, timezone) chạy unawaited sau `runApp()`, giúp mở app tức thì dưới 0.5s.
+* **Lazy Loading Navigation:** Chỉ nạp dữ liệu của Tab đang xem, giảm thiểu tải mạng đồng thời khi mở app.
+* **Cơ chế Timeout chống treo:** Đảm bảo các truy vấn Supabase có thời hạn chờ rõ ràng (12 giây), tránh tình trạng màn hình xoay vô hạn khi mạng yếu.
+
+### 9. 👤 Hồ sơ cá nhân (Profile & Customization)
 * **Avatar & Ảnh bìa tùy biến:** Hỗ trợ tải lên ảnh tĩnh hoặc ảnh động GIF lưu trữ trên Supabase Storage bucket `Images`.
 * **Thông tin cá nhân:** Tùy chỉnh Họ và tên, Số điện thoại, Địa chỉ và liên kết email tài khoản.
 * **Đồng bộ tự động:** Dữ liệu hồ sơ đồng bộ trực tiếp với bảng `profiles` và tự động khởi tạo khi đăng ký tài khoản.
@@ -52,15 +60,16 @@
 ```text
 lib/
 ├── core/
+│   ├── config/                           # Cấu hình URL & Key Supabase (SupabaseConfig)
 │   ├── di/                               # Cấu hình Dependency Injection (GetIt, Injectable)
 │   ├── error/                            # Định nghĩa Failure & Exception
-│   ├── navigation/                       # Định tuyến điều hướng với GoRouter
+│   ├── navigation/                       # Định tuyến điều hướng với GoRouter (AppRouter)
 │   ├── services/                         # Dịch vụ thông báo (DailyReminderService) & UI cài đặt
 │   ├── usecase/                          # Khung cơ sở UseCase
 │   └── utils/                            # Helper xử lý icon, định dạng số, tiền tệ
 │
 ├── features/
-│   ├── auth/                             # Xác thực tài khoản (Login / Register)
+│   ├── auth/                             # Xác thực tài khoản (Login / Register Fintech UI)
 │   │   └── presentation/pages/
 │   │
 │   ├── category/                         # Quản lý danh mục & hạn mức chi tiêu
@@ -73,19 +82,22 @@ lib/
 │   │   ├── domain/ (entities, repositories, usecases, utils)
 │   │   └── presentation/ (bloc, pages, widgets)
 │   │
-│   ├── home/                             # Thanh điều hướng chính (MainNavigationPage)
+│   ├── home/                             # Thanh điều hướng chính có Lazy Loading (MainNavigationPage)
 │   │   └── presentation/pages/
 │   │
-│   ├── profile/                          # Hồ sơ cá nhân (Avatar, Ảnh bìa, Thông tin)
+│   ├── profile/                          # Hồ sơ cá nhân (Avatar, Ảnh bìa GIF/ảnh tĩnh, Thông tin)
 │   │   ├── data/ (datasources, models)
 │   │   └── presentation/pages/
 │   │
-│   └── recurring/                        # Khoản thu chi cố định hàng tháng
-│       ├── data/ (datasources, models)
-│       ├── domain/ (entities)
-│       └── presentation/ (pages)
+│   ├── recurring/                        # Khoản thu chi cố định & định kỳ
+│   │   ├── data/ (datasources, models)
+│   │   ├── domain/ (entities)
+│   │   └── presentation/ (pages)
+│   │
+│   └── splash/                           # Màn hình Splash kiểm tra phiên đăng nhập
+│       └── presentation/pages/
 │
-└── main.dart                             # Khởi tạo App & các dịch vụ nền tảng
+└── main.dart                             # Điểm khởi chạy App & tối ưu hóa Cold Start
 ```
 
 ---
@@ -94,15 +106,17 @@ lib/
 
 | Thư viện | Phiên bản | Chức năng |
 | :--- | :--- | :--- |
-| `flutter_bloc` | `^8.1.6` | Quản lý trạng thái (State Management) theo BLoC/Cubit |
-| `supabase_flutter` | `^2.8.0` | Backend as a Service (Database PostgreSQL + Authentication) |
-| `go_router` | `^14.2.0` | Quản lý điều hướng màn hình & bảo vệ route đăng nhập |
+| `flutter_bloc` | `^8.1.6` | Quản lý trạng thái (State Management) theo chuẩn BLoC/Cubit |
+| `supabase_flutter` | `^2.8.0` | Backend as a Service (Database PostgreSQL + Authentication + Storage) |
+| `go_router` | `^14.2.0` | Quản lý điều hướng màn hình, Splash & bảo vệ route đăng nhập |
 | `get_it` & `injectable` | `^7.7.0` / `^2.5.0` | Quản lý phụ thuộc (Dependency Injection) |
-| `fl_chart` | `^0.70.1` | Vẽ biểu đồ tròn phân bổ & biểu đồ cột xu hướng |
-| `animate_do` | `^3.3.4` | Hiệu ứng chuyển động (animations) cho UI |
-| `flutter_local_notifications` | `^17.2.2` | Quản lý và lập lịch thông báo cục bộ |
-| `shared_preferences` | `^2.3.2` | Lưu trữ cấu hình cục bộ (cài đặt thông báo, khoản cố định) |
-| `intl` | `^0.20.2` | Định dạng tiền tệ VND (`₫`) và ngày tháng |
+| `fl_chart` | `^0.70.1` | Vẽ biểu đồ tròn phân bổ & biểu đồ cột xu hướng 7 ngày |
+| `animate_do` | `^3.3.4` | Hiệu ứng chuyển động (animations) mượt mà cho UI |
+| `flutter_local_notifications` | `^17.2.2` | Quản lý và lập lịch thông báo nhắc nhở cục bộ |
+| `timezone` | `^0.9.4` | Xử lý múi giờ cho thông báo định kỳ |
+| `shared_preferences` | `^2.3.2` | Lưu trữ cấu hình cục bộ (cài đặt thông báo, cache khoản cố định) |
+| `image_picker` | `^1.1.2` | Chọn ảnh/GIF từ thư viện để cập nhật hồ sơ |
+| `intl` | `^0.20.2` | Định dạng tiền tệ VND (`₫`) và thời gian chuẩn Việt Nam |
 
 ---
 
@@ -266,12 +280,12 @@ dart run build_runner build --delete-conflicting-outputs
 ```
 
 ### 4. Cấu hình Supabase
-Mở file [`lib/main.dart`](file:///c:/Users/ACER/Android/flutter/Expense-Flutter/lib/main.dart) và cập nhật thông tin dự án Supabase của bạn:
+Mở file [`lib/core/config/supabase_config.dart`](file:///c:/Users/ACER/Android/flutter/Expense-Flutter/lib/core/config/supabase_config.dart) và cập nhật thông tin dự án Supabase của bạn:
 ```dart
-await Supabase.initialize(
-  url: 'YOUR_SUPABASE_URL',
-  publishableKey: 'YOUR_SUPABASE_ANON_KEY',
-);
+class SupabaseConfig {
+  static const String url = 'YOUR_SUPABASE_PROJECT_URL';
+  static const String anonKey = 'YOUR_SUPABASE_ANON_KEY';
+}
 ```
 
 ### 5. Chạy ứng dụng
@@ -284,3 +298,4 @@ flutter run
 ## 👨‍💻 Tác giả & Giấy phép
 
 Được phát triển với ❤️ bằng **Flutter** & **Supabase**.
+Mã nguồn mở phục vụ cho mục đích học tập và quản lý tài chính cá nhân.
