@@ -17,10 +17,12 @@ void main() async {
 
   configureDependencies();
 
-  // Khởi tạo dịch vụ nhắc nhở hàng ngày
-  await DailyReminderService().init();
-
   runApp(const MyApp());
+
+  // Khởi tạo dịch vụ nhắc nhở chạy nền sau khi giao diện đã hiển thị
+  DailyReminderService().init().catchError((e) {
+    debugPrint('Lỗi khởi tạo DailyReminderService: $e');
+  });
 }
 
 class MyApp extends StatelessWidget {

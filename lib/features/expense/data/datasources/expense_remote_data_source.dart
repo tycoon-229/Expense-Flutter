@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:injectable/injectable.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/expense_model.dart';
@@ -20,7 +21,11 @@ class ExpenseRemoteDataSourceImpl implements ExpenseRemoteDataSource {
     final response = await supabase
         .from('expenses')
         .select('*, categories(name, color, icon)')
-        .order('date', ascending: false);
+        .order('date', ascending: false)
+        .timeout(
+          const Duration(seconds: 12),
+          onTimeout: () => throw TimeoutException('Kết nối quá hạn, vui lòng thử lại!'),
+        );
 
     return (response as List).map((json) => ExpenseModel.fromJson(json)).toList();
   }

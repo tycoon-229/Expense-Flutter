@@ -22,6 +22,7 @@ class MainNavigationPage extends StatefulWidget {
 class _MainNavigationPageState extends State<MainNavigationPage> {
   int _currentIndex = 0;
   late final ExpenseBloc _expenseBloc;
+  final List<bool> _visitedTabs = [true, false, false, false];
 
   final List<Widget> _pages = const [
     ExpenseListPage(),
@@ -34,18 +35,21 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   void initState() {
     super.initState();
     _expenseBloc = getIt<ExpenseBloc>()..add(LoadExpenses());
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _checkRecurringExpenses();
+    // Trì hoãn việc kiểm tra chi tiêu định kỳ sau 2 giây để nhường toàn bộ băng thông cho trang chính nạp dữ liệu trước
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        _checkRecurringExpenses();
+      }
     });
   }
 
   Future<void> _checkRecurringExpenses() async {
-    final due = await RecurringLocalDataSource().checkAndGenerateDueExpenses();
-    if (due.isNotEmpty) {
-      for (final e in due) {
-        _expenseBloc.add(AddExpenseEvent(e));
-      }
-      if (mounted) {
+    try {
+      final due = await RecurringLocalDataSource().checkAndGenerateDueExpenses();
+      if (due.isNotEmpty && mounted) {
+        for (final e in due) {
+          _expenseBloc.add(AddExpenseEvent(e));
+        }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('🔔 Đã tự động ghi nhận ${due.length} khoản thu chi định kỳ!'),
@@ -54,6 +58,8 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
           ),
         );
       }
+    } catch (e) {
+      debugPrint('Lỗi check recurring: $e');
     }
   }
 
@@ -72,7 +78,9 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
           return Scaffold(
             body: IndexedStack(
               index: _currentIndex,
-              children: _pages,
+              children: List.generate(_pages.length, (index) {
+                return _visitedTabs[index] ? _pages[index] : const SizedBox.shrink();
+              }),
             ),
             bottomNavigationBar: NavigationBarTheme(
               data: NavigationBarThemeData(
@@ -96,7 +104,10 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
                 elevation: 8,
                 backgroundColor: Colors.white,
                 onDestinationSelected: (index) {
-                  setState(() => _currentIndex = index);
+                  setState(() {
+                    _currentIndex = index;
+                    _visitedTabs[index] = true;
+                  });
                 },
                 destinations: const [
                   NavigationDestination(

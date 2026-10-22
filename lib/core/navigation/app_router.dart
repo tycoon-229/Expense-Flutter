@@ -11,6 +11,7 @@ import '../../features/expense/presentation/pages/expense_analytics_page.dart';
 import '../../features/home/presentation/pages/main_navigation_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../features/recurring/presentation/pages/recurring_transactions_page.dart';
+import '../../features/splash/presentation/pages/splash_page.dart';
 import '../services/presentation/pages/notification_settings_page.dart';
 
 class GoRouterRefreshStream extends ChangeNotifier {
@@ -32,20 +33,28 @@ class GoRouterRefreshStream extends ChangeNotifier {
 
 class AppRouter {
   static final router = GoRouter(
-    initialLocation: '/',
+    initialLocation: '/splash',
     refreshListenable: GoRouterRefreshStream(
       Supabase.instance.client.auth.onAuthStateChange,
     ),
     redirect: (context, state) {
       final session = Supabase.instance.client.auth.currentSession;
-      final isAuthRoute =
-          state.matchedLocation == '/login' || state.matchedLocation == '/register';
+      final location = state.matchedLocation;
+      final isAuthRoute = location == '/login' || location == '/register';
+      final isSplashRoute = location == '/splash';
+
+      // Để SplashPage tự xử lý kiểm tra phiên lúc khởi động
+      if (isSplashRoute) return null;
 
       if (session == null && !isAuthRoute) return '/login';
       if (session != null && isAuthRoute) return '/';
       return null;
     },
     routes: [
+      GoRoute(
+        path: '/splash',
+        builder: (context, state) => const SplashPage(),
+      ),
       GoRoute(
         path: '/login',
         builder: (context, state) => const LoginPage(),
