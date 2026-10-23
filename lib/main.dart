@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/di/injection.dart';
 import 'core/navigation/app_router.dart';
@@ -8,6 +9,9 @@ import 'core/services/daily_reminder_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Khởi tạo dữ liệu định dạng ngày tháng tiếng Việt cho package intl
+  await initializeDateFormatting('vi_VN', null);
 
   // Điền URL và Anon Key từ project Supabase của bạn
   await Supabase.initialize(

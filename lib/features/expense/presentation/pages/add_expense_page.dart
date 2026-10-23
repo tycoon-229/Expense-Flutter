@@ -96,6 +96,14 @@ class _AddExpensePageState extends State<AddExpensePage> {
     });
   }
 
+  String get _formattedSelectedDate {
+    try {
+      return DateFormat('EEEE, dd/MM/yyyy', 'vi_VN').format(_selectedDate);
+    } catch (_) {
+      return DateFormat('dd/MM/yyyy').format(_selectedDate);
+    }
+  }
+
   Color get _themeColor => _selectedType == TransactionType.expense
       ? const Color(0xFFFF5252)
       : const Color(0xFF00C853);
@@ -421,7 +429,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                                 const Icon(Icons.calendar_today, size: 18, color: Colors.deepPurple),
                                 const SizedBox(width: 12),
                                 Text(
-                                  DateFormat('EEEE, dd/MM/yyyy', 'vi_VN').format(_selectedDate),
+                                  _formattedSelectedDate,
                                   style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
                                 ),
                               ],
